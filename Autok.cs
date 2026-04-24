@@ -1,11 +1,3 @@
-// ============================================================
-// 3. Autók mozgása – megoldás (C#)
-// Érettségi vizsga 2024. október 22.
-// ============================================================
-// Bemeneti fájl: jeladas.txt  (tabulátorral elválasztva)
-// Oszlopok: rendszám  óra  perc  sebesség(km/h)
-// ============================================================
-
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -18,145 +10,106 @@ class Autok
         public string Rendszam;
         public int    Ora;
         public int    Perc;
-        public int    Sebesseg; // km/h
+        public int    Sebesseg;
     }
 
     static void Main()
     {
-        // ------------------------------------------------------------------
-        // 1. FELADAT – Adatok beolvasása és tárolása
-        // ------------------------------------------------------------------
+        // 1. FELADAT
         var adatok = new List<Jeladas>();
-
         foreach (string sor in File.ReadAllLines("jeladas.txt"))
         {
             string[] reszek = sor.Trim().Split('\t');
             if (reszek.Length != 4) continue;
-
             adatok.Add(new Jeladas
             {
-                Rendszam  = reszek[0],
-                Ora       = int.Parse(reszek[1]),
-                Perc      = int.Parse(reszek[2]),
-                Sebesseg  = int.Parse(reszek[3])
+                Rendszam = reszek[0],
+                Ora      = int.Parse(reszek[1]),
+                Perc     = int.Parse(reszek[2]),
+                Sebesseg = int.Parse(reszek[3])
             });
         }
 
-        // ------------------------------------------------------------------
-        // 2. FELADAT – Utolsó jeladás időpontja és járműve
-        // ------------------------------------------------------------------
+        // 2. FELADAT
         Jeladas utolso = adatok[adatok.Count - 1];
         Console.WriteLine("2. feladat:");
-        Console.WriteLine(
-            $"Az utolsó jeladás időpontja {utolso.Ora}:{utolso.Perc:D2}, " +
-            $"a jármű rendszáma {utolso.Rendszam}");
+        Console.WriteLine($"Az utolso jeladas idopontja {utolso.Ora}:{utolso.Perc:D2}, a jarmu rendszama {utolso.Rendszam}");
         Console.WriteLine();
 
-        // ------------------------------------------------------------------
-        // 3. FELADAT – Első jármű rendszáma és jeladásainak időpontjai
-        // ------------------------------------------------------------------
-        string elsoRendszam = adatok[0].Rendszam;
-        var elsoJeladasok   = adatok.Where(j => j.Rendszam == elsoRendszam).ToList();
-        string idopontok    = string.Join(" ",
-            elsoJeladasok.Select(j => $"{j.Ora}:{j.Perc}"));
-
+        // 3. FELADAT
+        string elsoR    = adatok[0].Rendszam;
+        var elsoJeladak = adatok.Where(j => j.Rendszam == elsoR).ToList();
+        string idok     = string.Join(" ", elsoJeladak.Select(j => $"{j.Ora}:{j.Perc}"));
         Console.WriteLine("3. feladat:");
-        Console.WriteLine($"Az első jármű: {elsoRendszam}");
-        Console.WriteLine($"Jeladásainak időpontjai: {idopontok}");
+        Console.WriteLine($"Az elso jarmu: {elsoR}");
+        Console.WriteLine($"Jeladásainak idopontjai: {idok}");
         Console.WriteLine();
 
-        // ------------------------------------------------------------------
-        // 4. FELADAT – Jeladások száma adott időpontban
-        // ------------------------------------------------------------------
+        // 4. FELADAT
         Console.WriteLine("4. feladat:");
-        Console.Write("Kérem, adja meg az órát: ");
-        int kertOra  = int.Parse(Console.ReadLine()!);
-        Console.Write("Kérem, adja meg a percet: ");
-        int kertPerc = int.Parse(Console.ReadLine()!);
-
-        int db = adatok.Count(j => j.Ora == kertOra && j.Perc == kertPerc);
-        Console.WriteLine($"A jeladások száma: {db}");
+        Console.Write("Kerem, adja meg az orat: ");
+        int kOra  = int.Parse(Console.ReadLine()!);
+        Console.Write("Kerem, adja meg a percet: ");
+        int kPerc = int.Parse(Console.ReadLine()!);
+        int db    = adatok.Count(j => j.Ora == kOra && j.Perc == kPerc);
+        Console.WriteLine($"A jeladasok szama: {db}");
         Console.WriteLine();
 
-        // ------------------------------------------------------------------
-        // 5. FELADAT – Legnagyobb sebesség és a hozzá tartozó járművek
-        // ------------------------------------------------------------------
-        int maxSeb       = adatok.Max(j => j.Sebesseg);
-        var maxJarmuvek  = adatok
-            .Where(j => j.Sebesseg == maxSeb)
-            .Select(j => j.Rendszam);
-
+        // 5. FELADAT
+        int maxSeb      = adatok.Max(j => j.Sebesseg);
+        var maxJarmuvek = adatok.Where(j => j.Sebesseg == maxSeb).Select(j => j.Rendszam);
         Console.WriteLine("5. feladat:");
-        Console.WriteLine($"A legnagyobb sebesség km/h: {maxSeb}");
-        Console.WriteLine($"A járművek: {string.Join(" ", maxJarmuvek)}");
+        Console.WriteLine($"A legnagyobb sebesseg km/h: {maxSeb}");
+        Console.WriteLine($"A jarmuvek: {string.Join(" ", maxJarmuvek)}");
         Console.WriteLine();
 
-        // ------------------------------------------------------------------
-        // 6. FELADAT – Adott jármű távolsága az útszakasz elejétől
-        // ------------------------------------------------------------------
-        // Az autó a jeladástól a következő jeladásig az akkori sebességgel halad.
-        // Megtett út = sebesség × időkülönbség (órában kifejezve).
+        // 6. FELADAT
         Console.WriteLine("6. feladat:");
-        Console.Write("Kérem, adja meg a rendszámot: ");
-        string kertRendszam = Console.ReadLine()!.Trim();
-
-        var autóJeladások = adatok
-            .Where(j => j.Rendszam == kertRendszam)
-            .ToList();
-
-        if (autóJeladások.Count == 0)
+        Console.Write("Kerem, adja meg a rendszamot: ");
+        string kR  = Console.ReadLine()!.Trim();
+        var cSigs  = adatok.Where(j => j.Rendszam == kR).ToList();
+        if (cSigs.Count == 0)
         {
-            Console.WriteLine("Nincs ilyen rendszámú jármű az adatokban.");
+            Console.WriteLine("Nincs ilyen rendszamu jarmu az adatokban.");
         }
         else
         {
-            double tavolsag = 0.0;
-            for (int i = 0; i < autóJeladások.Count; i++)
+            double tav = 0.0;
+            for (int i = 0; i < cSigs.Count; i++)
             {
-                var j = autóJeladások[i];
-                Console.WriteLine($"{j.Ora}:{j.Perc} {tavolsag:F1} km");
-
-                if (i + 1 < autóJeladások.Count)
+                var j = cSigs[i];
+                Console.WriteLine($"{j.Ora}:{j.Perc} {tav:F1} km");
+                if (i + 1 < cSigs.Count)
                 {
-                    var kov = autóJeladások[i + 1];
-                    double elteltOra =
-                        (kov.Ora * 60 + kov.Perc - j.Ora * 60 - j.Perc) / 60.0;
-                    tavolsag += j.Sebesseg * elteltOra;
+                    var k = cSigs[i + 1];
+                    double elteltOra = (k.Ora * 60 + k.Perc - j.Ora * 60 - j.Perc) / 60.0;
+                    tav += j.Sebesseg * elteltOra;
                 }
             }
         }
         Console.WriteLine();
 
-        // ------------------------------------------------------------------
-        // 7. FELADAT – ido.txt létrehozása
-        // ------------------------------------------------------------------
-        // Soronként: rendszám  első_jeladás_óra  perc  utolsó_jeladás_óra  perc
-        // Minden jármű pontosan egyszer szerepel (az adatok időrendben vannak).
-        var jarmuSorrendben = new List<string>();
-        var elsoJeladas     = new Dictionary<string, (int ora, int perc)>();
-        var utolsoJeladas   = new Dictionary<string, (int ora, int perc)>();
-
+        // 7. FELADAT
+        var sorrendben    = new List<string>();
+        var elsoJeladas   = new Dictionary<string, (int o, int p)>();
+        var utolsoJeladas = new Dictionary<string, (int o, int p)>();
         foreach (var j in adatok)
         {
             if (!elsoJeladas.ContainsKey(j.Rendszam))
             {
-                jarmuSorrendben.Add(j.Rendszam);
+                sorrendben.Add(j.Rendszam);
                 elsoJeladas[j.Rendszam] = (j.Ora, j.Perc);
             }
             utolsoJeladas[j.Rendszam] = (j.Ora, j.Perc);
         }
-
         using (var fw = new StreamWriter("ido.txt"))
-        {
-            foreach (string r in jarmuSorrendben)
+            foreach (string r in sorrendben)
             {
                 var (fo, fp) = elsoJeladas[r];
                 var (lo, lp) = utolsoJeladas[r];
                 fw.WriteLine($"{r} {fo} {fp} {lo} {lp}");
             }
-        }
-
         Console.WriteLine("7. feladat:");
-        Console.WriteLine("Az ido.txt állomány sikeresen elkészült.");
+        Console.WriteLine("Az ido.txt allomany sikeresen elkeszult.");
     }
 }
