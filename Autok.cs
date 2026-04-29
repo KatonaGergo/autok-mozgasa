@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 
 class Autok
 {
@@ -37,9 +36,16 @@ class Autok
         Console.WriteLine();
 
         // 3. FELADAT
-        string elsoR    = adatok[0].Rendszam;
-        var elsoJeladak = adatok.Where(j => j.Rendszam == elsoR).ToList();
-        string idok     = string.Join(" ", elsoJeladak.Select(j => $"{j.Ora}:{j.Perc}"));
+        string elsoR = adatok[0].Rendszam;
+        var idopontok = new List<string>();
+        foreach (var j in adatok)
+        {
+            if (j.Rendszam == elsoR)
+            {
+                idopontok.Add($"{j.Ora}:{j.Perc}");
+            }
+        }
+        string idok = string.Join(" ", idopontok);
         Console.WriteLine("3. feladat:");
         Console.WriteLine($"Az elso jarmu: {elsoR}");
         Console.WriteLine($"Jeladásainak idopontjai: {idok}");
@@ -51,13 +57,34 @@ class Autok
         int kOra  = int.Parse(Console.ReadLine()!);
         Console.Write("Kerem, adja meg a percet: ");
         int kPerc = int.Parse(Console.ReadLine()!);
-        int db    = adatok.Count(j => j.Ora == kOra && j.Perc == kPerc);
+        int db = 0;
+        foreach (var j in adatok)
+        {
+            if (j.Ora == kOra && j.Perc == kPerc)
+            {
+                db++;
+            }
+        }
         Console.WriteLine($"A jeladasok szama: {db}");
         Console.WriteLine();
 
         // 5. FELADAT
-        int maxSeb      = adatok.Max(j => j.Sebesseg);
-        var maxJarmuvek = adatok.Where(j => j.Sebesseg == maxSeb).Select(j => j.Rendszam);
+        int maxSeb = adatok[0].Sebesseg;
+        foreach (var j in adatok)
+        {
+            if (j.Sebesseg > maxSeb)
+            {
+                maxSeb = j.Sebesseg;
+            }
+        }
+        var maxJarmuvek = new List<string>();
+        foreach (var j in adatok)
+        {
+            if (j.Sebesseg == maxSeb)
+            {
+                maxJarmuvek.Add(j.Rendszam);
+            }
+        }
         Console.WriteLine("5. feladat:");
         Console.WriteLine($"A legnagyobb sebesseg km/h: {maxSeb}");
         Console.WriteLine($"A jarmuvek: {string.Join(" ", maxJarmuvek)}");
@@ -66,8 +93,15 @@ class Autok
         // 6. FELADAT
         Console.WriteLine("6. feladat:");
         Console.Write("Kerem, adja meg a rendszamot: ");
-        string kR  = Console.ReadLine()!.Trim();
-        var cSigs  = adatok.Where(j => j.Rendszam == kR).ToList();
+        string kR = Console.ReadLine()!.Trim();
+        var cSigs = new List<Jeladas>();
+        foreach (var j in adatok)
+        {
+            if (j.Rendszam == kR)
+            {
+                cSigs.Add(j);
+            }
+        }
         if (cSigs.Count == 0)
         {
             Console.WriteLine("Nincs ilyen rendszamu jarmu az adatokban.");
